@@ -7,6 +7,6 @@
   "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/jsdfhasuh/ha-yutai-wifi/issues",
-  "requirements": ["python-miio==0.5.12"],
+  "requirements": ["python-miio>=0.5.12"],
   "version": "0.1.0"
 }

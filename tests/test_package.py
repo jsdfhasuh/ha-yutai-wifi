@@ -21,7 +21,7 @@ class PackageTests(unittest.TestCase):
     def test_manifest_and_hacs(self):
         manifest = validate_component()
         self.assertEqual(manifest["iot_class"], "local_polling")
-        self.assertEqual(manifest["requirements"], ["python-miio==0.5.12"])
+        self.assertEqual(manifest["requirements"], ["python-miio>=0.5.12"])
         self.assertNotIn("single_config_entry", manifest)
         hacs = json.loads((ROOT / "hacs.json").read_text(encoding="utf-8"))
         self.assertEqual(hacs["homeassistant"], "2026.10.4")

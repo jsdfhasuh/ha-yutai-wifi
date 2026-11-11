@@ -23,6 +23,8 @@ FILES = (
     "strings.json",
     "translations/en.json",
     "translations/zh-Hans.json",
+    "brand/icon.png",
+    "brand/icon@2x.png",
 )
 
 
@@ -36,6 +38,11 @@ def validate_component():
         path = COMPONENT / name
         if path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(COMPONENT.resolve()):
             raise ValueError("Invalid package source")
+        if path.suffix == ".png":
+            data = path.read_bytes()
+            if not data.startswith(b"\x89PNG\r\n\x1a\n") or len(data) > 131072:
+                raise ValueError("Unexpected brand image")
+            continue
         text = path.read_text(encoding="utf-8")
         if re.search(r"(?i)\b[0-9a-f]{32}\b|\b(?:[0-9a-f]{2}:){5}[0-9a-f]{2}\b|\b192\.168\.\d+\.\d+\b", text):
             raise ValueError("Potential private identity or credential in component")
