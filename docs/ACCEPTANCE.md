@@ -1,6 +1,6 @@
 # Acceptance Boundaries
 
-Local development version: 0.1.0. Validation date: 2026-11-11.
+First public version: 0.1.0. Validation date: 2026-11-11.
 
 ## Passed
 
@@ -15,16 +15,26 @@ Local development version: 0.1.0. Validation date: 2026-11-11.
   one JDLS1 device. Authenticated identity and all five local reads passed.
   The probe's transport rejects all methods except miIO.info and get_properties;
   zero write commands were sent. No credentials or device addresses are included here.
-- Ruff lint/format and the explicit 14-file component package checks passed.
+- Ruff lint/format and the explicit 16-file component package checks passed.
+- Public source is available at https://github.com/jsdfhasuh/ha-yutai-wifi.
+  CI run 43030347181 passed offline tests, HA framework tests, hassfest and HACS
+  validation for component commit 01554a6. The shared python-miio dependency uses
+  the minimum-version policy required by hassfest.
+- HACS custom-repository download and installation succeeded on HA 2026.10.4.
+  All 16 installed component files matched the approved source byte-for-byte.
+  The HA configuration check passed, and the config flow created one loaded
+  entry with five available entities. No relay write was sent during commissioning.
+- Initial live verification found no removed preexisting entries/entities or
+  changes to preexisting config-entry data. Related logs contained no errors.
 - The earlier protocol research completed one authorized ON/OFF/readback test,
   but that was not a test of this installed HA integration.
 
 ## Not Yet Accepted
 
-- Public GitHub repository, published version/tag, and release assets.
-- Official hassfest and HACS CI runs. Workflows are prepared but have not run.
-- Actual HACS custom-repository download, installation, update or removal.
-- Loading this integration into a running production HA instance.
+- Tagged GitHub Releases and HACS default-store inclusion. Installation currently
+  tracks the main branch; this is a custom repository, not a default-store entry.
+- HACS upgrades to a different component version and uninstallation.
+- Long-term restart/recovery reliability beyond initial commissioning checks.
 - Its switch service controlling a real electrical load from HA.
 - Multiple physical JDLS1 devices running concurrently; isolation is tested with fixtures.
 - Long-duration availability, full WAN isolation, clock/power-cycle behavior,
@@ -33,14 +43,15 @@ Local development version: 0.1.0. Validation date: 2026-11-11.
 
 ## Deployment Boundary
 
-Framework tests used only installed libraries in a temporary directory; the
-production HA configuration, config entries, entity registry, services and
-container lifecycle were not changed. No production YAML check or restart was
-needed because no HA configuration was modified. Dependency installation was
-not performed inside the production environment.
+Earlier framework tests used only installed libraries in a temporary directory.
+The subsequently authorized live installation used HACS and HA's config-flow
+API, with private backups first. It installed only this component and its new
+device entry/entities; it did not directly edit `.storage`, change production
+YAML or call switch services. Configuration checking passed. Existing credentials
+were transferred through SSH stdin, never through command-line values or public files.
 
-Public upload and production installation require separate confirmation.
-For the first installation, back up the affected integration/configuration
+Future public releases and production changes require appropriate confirmation.
+Before installation, back up the affected integration/configuration
 state, install only this domain, check HA configuration, and restart only HA
 if required to load new integration code. Configuration and startup perform
 read-only probes; the first real switch action remains a separate acceptance step.
