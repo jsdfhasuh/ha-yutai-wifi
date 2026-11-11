@@ -1,10 +1,21 @@
 # Acceptance Boundaries
 
-First public version: 0.1.0. Validation date: 2026-11-11.
+Current version: 0.1.1. Validation date: 2026-11-11.
+
+## Idle Polling Regression
+
+Initial 0.1.0 commissioning succeeded but sustained polling failed. A read-only
+real-device reproduction confirmed: initial read succeeds, the same client after
+65 seconds times out, and explicit MiIO handshake restores all five reads.
+The no-command-retry policy had bypassed python-miio's usual timestamp/discovery
+resynchronization on retry. Version 0.1.1 explicitly handshakes before each
+identity/read-or-write operation while keeping relay write retries disabled.
+Three synthetic regression cases cover idle reads, idle writes and recovery from
+handshake failure. Sustained post-update live polling is a separate deployment check.
 
 ## Passed
 
-- 43 tests passed against the real Home Assistant 2026.10.4 runtime, with
+- The initial 0.1.0 suite passed 43 tests against the real Home Assistant 2026.10.4 runtime, with
   synthetic devices and a fresh temporary configuration directory. This covers
   22 transport/model tests, 16 framework tests and 5 package tests.
 - Model/MAC verification, explicit relay writes with acknowledgement and readback,

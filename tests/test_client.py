@@ -43,10 +43,21 @@ class FakeDevice:
         self.ack = [{"did": "relay", "siid": 2, "piid": 1, "code": 0}]
         self.apply_write = True
         self.error = None
+        self.handshake_count = 0
+        self.needs_handshake = True
+        self.handshake_error = None
+
+    def send_handshake(self):
+        self.handshake_count += 1
+        if self.handshake_error:
+            raise self.handshake_error
+        self.needs_handshake = False
 
     def info(self, *, skip_cache):
         assert skip_cache is True
         self.info_count += 1
+        if self.needs_handshake:
+            raise TimeoutError("Synthetic stale MiIO session")
         if self.error:
             raise self.error
         logging.getLogger("miio.miioprotocol").warning("private fixture %s", TOKEN)
@@ -88,6 +99,33 @@ class ClientTests(unittest.TestCase):
         client.read()
         client.read()
         self.assertEqual(device.info_count, 2)
+        self.assertEqual(device.handshake_count, 2)
+
+    def test_idle_poll_resynchronizes_before_identity_read(self):
+        client, device = make_client()
+        client.read()
+        device.needs_handshake = True
+        self.assertEqual(client.read().values["voltage"], 230)
+        self.assertEqual(device.handshake_count, 2)
+        self.assertEqual([method for method, _ in device.calls], ["get_properties", "get_properties"])
+
+    def test_write_after_idle_handshakes_but_never_replays_write(self):
+        client, device = make_client()
+        client.read()
+        device.needs_handshake = True
+        self.assertTrue(client.set_relay(True).values["relay"])
+        self.assertEqual(device.handshake_count, 2)
+        self.assertEqual(sum(method == "set_properties" for method, _ in device.calls), 1)
+
+    def test_handshake_failure_is_sanitized_and_next_read_recovers(self):
+        client, device = make_client()
+        device.handshake_error = TimeoutError(TOKEN)
+        with self.assertRaises(CannotConnect) as caught:
+            client.read()
+        self.assertNotIn(TOKEN, str(caught.exception))
+        self.assertEqual(device.calls, [])
+        device.handshake_error = None
+        self.assertEqual(client.read().values["voltage"], 230)
 
     def test_unknown_model_rejected_without_property_commands(self):
         client, device = make_client()

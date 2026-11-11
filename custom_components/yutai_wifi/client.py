@@ -110,7 +110,10 @@ class PlugClient:
         return self._device
 
     def _identity(self) -> Identity:
-        info = self._get_device().info(skip_cache=True)
+        device = self._get_device()
+        # MiIO timestamps expire during idle polls. Resync without replaying a command.
+        device.send_handshake()
+        info = device.info(skip_cache=True)
         model = info.model
         mac = normalize_mac(info.mac_address)
         if self._expected_mac and self._expected_mac != mac:
