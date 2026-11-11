@@ -1,0 +1,40 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Yutai Wi-Fi socket",
+        "description": "Enter the device IPv4 address and 32-character MiIO token. Setup only reads device identity and properties. Supported model: yutai.plug.jdls1.",
+        "data": {"host": "IP address", "token": "MiIO token", "name": "Name"}
+      },
+      "reconfigure": {
+        "title": "Update socket connection",
+        "description": "Leave the token blank to keep the current token. The authenticated device identity must remain the same.",
+        "data": {"host": "IP address", "token": "New MiIO token"}
+      }
+    },
+    "error": {
+      "invalid_host": "Enter a valid device IPv4 address.",
+      "invalid_token": "Enter exactly 32 hexadecimal characters.",
+      "cannot_connect": "Cannot verify the device. Check the address, token and local network access.",
+      "unsupported_model": "This model has no verified profile and cannot be added.",
+      "wrong_device": "This address belongs to a different device. Add it as a separate socket."
+    },
+    "abort": {
+      "already_configured": "This socket is already configured.",
+      "unique_id_mismatch": "The device identity does not match this configuration.",
+      "reconfigure_successful": "Connection settings updated."
+    }
+  },
+  "entity": {
+    "switch": {"relay": {"name": "Power"}},
+    "sensor": {
+      "voltage": {"name": "Voltage"},
+      "current": {"name": "Current"},
+      "power": {"name": "Power"},
+      "energy": {"name": "Reported energy"}
+    }
+  },
+  "exceptions": {
+    "command_failed": {"message": "The power command could not be confirmed. The socket may have changed state; check it before retrying."}
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "添加宇泰 Wi-Fi 插座",
+        "description": "输入插座的 IPv4 地址和 32 位 MiIO Token。添加过程只读取身份和属性，不切换电源。目前支持 yutai.plug.jdls1。",
+        "data": {"host": "IP 地址", "token": "MiIO Token", "name": "名称"}
+      },
+      "reconfigure": {
+        "title": "更新插座连接",
+        "description": "Token 留空时保留原值。新的连接必须对应同一台插座。",
+        "data": {"host": "IP 地址", "token": "新的 MiIO Token"}
+      }
+    },
+    "error": {
+      "invalid_host": "请输入有效的插座 IPv4 地址。",
+      "invalid_token": "Token 必须为 32 位十六进制字符。",
+      "cannot_connect": "无法验证设备，请检查 IP、Token 和局域网连通性。",
+      "unsupported_model": "此型号尚无经过验证的适配，不能添加。",
+      "wrong_device": "此地址对应另一台设备，请将它作为新插座单独添加。"
+    },
+    "abort": {
+      "already_configured": "这台插座已添加。",
+      "unique_id_mismatch": "设备身份与原配置不一致。",
+      "reconfigure_successful": "连接设置已更新。"
+    }
+  },
+  "entity": {
+    "switch": {"relay": {"name": "电源"}},
+    "sensor": {
+      "voltage": {"name": "电压"},
+      "current": {"name": "电流"},
+      "power": {"name": "功率"},
+      "energy": {"name": "设备上报电量"}
+    }
+  },
+  "exceptions": {
+    "command_failed": {"message": "无法确认电源命令结果，插座可能已经改变状态，请先核实再重试。"}
+  }
+}
